@@ -1,5 +1,7 @@
 const cheerio = require('cheerio');
-const log_level = "DEBUG";
+const dotenv = require('dotenv');
+dotenv.config();
+const log_level = process.env.LOG_LEVEL;
 
 const MAX_RATE_LIMITING = 1000; //ms
 
