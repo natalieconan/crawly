@@ -3,10 +3,11 @@ const utils = require('./utils/utils');
 const dotenv = require('dotenv');
 const cheerio = require('cheerio');
 const Car = require('./models/car');
-const client = require('./elastic')
+const client = require('./elastic');
 
 dotenv.config();
 
+const BASE_URL = "https://www.carlist.my";
 const initUrls = [ "https://www.carlist.my" ];
 const requiredTags = [ "Used Cars" ];
 const extractBodyTypes = [
@@ -32,8 +33,16 @@ const parseCarLists = async (page, pageNextUrl) => {
 
   if (!valid) return;
   
+  // move to car detail
   carUrlList = await utils.getLinks('a.ellipsize.js-ellipsize-text', page);
   await utils.crawl(page, carUrlList, parseCar);
+
+  // move to another page
+  nextPage = await utils.getLinks('#classified-listings-result ul li.next a', page);
+  const nextUrl = nextPage.pop();
+  console.log(nextUrl);
+  if (nextUrl !== "")
+    await parseCarLists(page, new URL(nextUrl, BASE_URL));
 }
 
 const parseCar = async (page, pageNextUrl) => {
