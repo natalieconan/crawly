@@ -69,7 +69,12 @@ const parseCar = async (page, pageNextUrl) => {
   car.engine_type = body.find("#tab-specifications div:nth-child(3) div:nth-child(9) span:nth-child(2)").text();
   car.engine_unit = body.find('#tab-specifications div:nth-child(3) div:nth-child(2) span:nth-child(1)').text().split(" ")[1];
 
-  await client.index(car);
+  const data = [
+    { index: { _index: 'cars_index', _type: '_doc' } },
+    car
+  ];
+  const response = await client.bulk({ body: data });
+  console.log(response);
 }
 
 const run = async () => {
